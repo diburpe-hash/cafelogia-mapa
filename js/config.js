@@ -6,7 +6,7 @@
 // 3. Pega aquí la URL que te da Google (empieza con https://docs.google.com/spreadsheets/d/e/...).
 // Mientras esto quede vacío ("") el mapa usa el archivo local data/cafelogia.csv.
 const CAFELOGIA_CONFIG = {
-  sheetCsvUrl: "",
+  sheetCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT3HfCvVk4QWIcj_nnWFknASgaYvTi8BZYjlwqerPbFWEGQ6PiGroyT0pGSVH-hszLQwBbCeG7yhMSP/pub?output=csv",
   localCsvUrl: "data/cafelogia.csv",
   initialCenter: [42.5075, 1.5218], // Andorra la Vella
   initialZoom: 13,

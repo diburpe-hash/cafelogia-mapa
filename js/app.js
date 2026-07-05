@@ -130,13 +130,30 @@
     });
   }
 
+  // Google Sheets a veces reexporta las coordenadas usando el separador de
+  // miles regional (ej. "425.063.528.999.999" en vez de "42.5063528999999")
+  // según la configuración de idioma/región de la cuenta que edita la hoja.
+  // Si el valor trae más de un separador, se asume que es ese caso y se
+  // reconstruye el número a partir de los dígitos, insertando el punto
+  // decimal en la posición esperada (intDigits = dígitos enteros reales).
+  function parseCoord(raw, intDigits) {
+    const s = String(raw ?? "").trim();
+    const separators = (s.match(/[.,]/g) || []).length;
+    const plain = parseFloat(s.replace(",", "."));
+    if (separators <= 1 && !Number.isNaN(plain) && Math.abs(plain) < 1000) {
+      return plain;
+    }
+    const digits = s.replace(/[^0-9]/g, "");
+    return parseFloat(digits.slice(0, intDigits) + "." + digits.slice(intDigits));
+  }
+
   function renderEntries(rows) {
     let cafeCount = 0;
     let turismoCount = 0;
 
     rows.forEach((row) => {
-      const lat = parseFloat(row.Latitude);
-      const lon = parseFloat(row.Longitude);
+      const lat = parseCoord(row.Latitude, 2);
+      const lon = parseCoord(row.Longitude, 1);
       if (Number.isNaN(lat) || Number.isNaN(lon)) return;
 
       const group = row.Group === GROUP_CAFE ? GROUP_CAFE : GROUP_TURISMO;
