@@ -1,0 +1,5 @@
+<svg width="30" height="40" viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
+  <path d="M15 0C6.72 0 0 6.72 0 15c0 10.5 15 25 15 25s15-14.5 15-25C30 6.72 23.28 0 15 0z" fill="#8a5a3b"/>
+  <circle cx="15" cy="15.5" r="8.5" fill="#ffffff"/>
+  <image href="icons/logo-c.png" x="8" y="8.5" width="14" height="14" preserveAspectRatio="xMidYMid meet"/>
+</svg>

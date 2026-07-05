@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Mapa Cafelogía — Cafeterías y puntos turísticos de Andorra</title>
+  <meta name="description" content="Mapa interactivo de cafeterías de especialidad y puntos turísticos de Andorra, por Cafelogía." />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h1>Cafelogía</h1>
+        <button id="sidebarToggle" aria-label="Cerrar panel">✕</button>
+      </div>
+
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Buscar un lugar..." autocomplete="off" />
+      </div>
+
+      <div class="layers">
+        <label class="layer-row" data-group="Cafeterías de Especialidad">
+          <span class="layer-swatch swatch-cafe"></span>
+          <span class="layer-name">Cafeterías de Especialidad</span>
+          <span class="layer-count" id="countCafe">0</span>
+          <input type="checkbox" checked />
+        </label>
+        <label class="layer-row" data-group="Puntos Turísticos">
+          <span class="layer-swatch swatch-turismo"></span>
+          <span class="layer-name">Puntos Turísticos</span>
+          <span class="layer-count" id="countTurismo">0</span>
+          <input type="checkbox" checked />
+        </label>
+      </div>
+
+      <div id="resultsList" class="results-list" hidden></div>
+
+      <div class="sidebar-footer">
+        <a href="https://cafelogia.com" target="_blank" rel="noopener">← Volver al blog Cafelogía</a>
+      </div>
+    </aside>
+
+    <button id="sidebarOpen" aria-label="Abrir panel">☰</button>
+
+    <main id="mapWrap">
+      <div id="map"></div>
+      <button id="locateBtn" title="Mi ubicación">📍</button>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
