@@ -28,7 +28,8 @@
     clusterGroups: {},
     cafeIcon: null,
     turismoIcons: {}, // { foto: L.divIcon, museo: L.divIcon, ... }
-    allEntries: [], // { row, marker }
+    allEntries: [], // { row, marker, group }
+    sortOrder: { [GROUP_CAFE]: "asc", [GROUP_TURISMO]: "asc" },
   };
 
   document.addEventListener("DOMContentLoaded", init);
@@ -55,6 +56,8 @@
 
     const rows = await loadData();
     renderEntries(rows);
+    renderPlaceList(GROUP_CAFE);
+    renderPlaceList(GROUP_TURISMO);
     bindSearch();
   }
 
@@ -172,6 +175,43 @@
 
     document.getElementById("countCafe").textContent = cafeCount;
     document.getElementById("countTurismo").textContent = turismoCount;
+  }
+
+  function zoomAndOpen(entry) {
+    const layer = state.clusterGroups[entry.group];
+    if (layer.zoomToShowLayer) {
+      layer.zoomToShowLayer(entry.marker, () => entry.marker.openPopup());
+    } else {
+      state.map.setView(entry.marker.getLatLng(), 17);
+      entry.marker.openPopup();
+    }
+  }
+
+  function renderPlaceList(group) {
+    const list = document.querySelector(`.layer-group[data-group="${cssEscape(group)}"] .place-list`);
+    if (!list) return;
+
+    const entries = state.allEntries.filter((e) => e.group === group);
+    const order = state.sortOrder[group];
+    entries.sort((a, b) => {
+      const cmp = (a.row.Name || "").localeCompare(b.row.Name || "", "es", { sensitivity: "base" });
+      return order === "desc" ? -cmp : cmp;
+    });
+
+    list.innerHTML = entries
+      .map(
+        (entry) =>
+          `<li class="place-item" data-name="${escapeHtml((entry.row.Name || "").toLowerCase())}">${escapeHtml(entry.row.Name || "")}</li>`
+      )
+      .join("");
+
+    list.querySelectorAll(".place-item").forEach((li, i) => {
+      li.addEventListener("click", () => zoomAndOpen(entries[i]));
+    });
+  }
+
+  function cssEscape(value) {
+    return window.CSS && CSS.escape ? CSS.escape(value) : value;
   }
 
   function pickTurismoIcon(iconValue) {
@@ -305,14 +345,36 @@
   }
 
   function bindSidebarControls() {
-    document.querySelectorAll(".layer-row").forEach((row) => {
-      const checkbox = row.querySelector("input[type=checkbox]");
-      const group = row.dataset.group;
+    document.querySelectorAll(".layer-group").forEach((group) => {
+      const groupName = group.dataset.group;
+      const checkbox = group.querySelector('input[type="checkbox"]');
+      const expandBtn = group.querySelector(".layer-expand");
+      const nameEl = group.querySelector(".layer-name");
+      const sortBtn = group.querySelector(".layer-sort");
+      const list = group.querySelector(".place-list");
+
       checkbox.addEventListener("change", () => {
-        const layer = state.clusterGroups[group];
+        const layer = state.clusterGroups[groupName];
         if (!layer) return;
         if (checkbox.checked) state.map.addLayer(layer);
         else state.map.removeLayer(layer);
+      });
+
+      function toggleExpand() {
+        const willOpen = list.hidden;
+        list.hidden = !willOpen;
+        expandBtn.classList.toggle("open", willOpen);
+        expandBtn.setAttribute("aria-expanded", String(willOpen));
+      }
+      expandBtn.addEventListener("click", toggleExpand);
+      nameEl.addEventListener("click", toggleExpand);
+
+      sortBtn.addEventListener("click", () => {
+        const next = sortBtn.dataset.order === "asc" ? "desc" : "asc";
+        sortBtn.dataset.order = next;
+        sortBtn.textContent = next === "asc" ? "A↓" : "Z↓";
+        state.sortOrder[groupName] = next;
+        renderPlaceList(groupName);
       });
     });
 
@@ -347,43 +409,27 @@
 
   function bindSearch() {
     const input = document.getElementById("searchInput");
-    const list = document.getElementById("resultsList");
 
     input.addEventListener("input", () => {
       const q = input.value.trim().toLowerCase();
-      if (!q) {
-        list.hidden = true;
-        list.innerHTML = "";
-        return;
-      }
 
-      const matches = state.allEntries
-        .filter((entry) => (entry.row.Name || "").toLowerCase().includes(q))
-        .slice(0, 30);
+      document.querySelectorAll(".layer-group").forEach((group) => {
+        const list = group.querySelector(".place-list");
+        const expandBtn = group.querySelector(".layer-expand");
+        const items = Array.from(list.querySelectorAll(".place-item"));
+        let matchCount = 0;
 
-      list.hidden = false;
-      list.innerHTML = matches
-        .map(
-          (entry, i) => `
-            <button class="result-item" data-index="${i}">
-              ${escapeHtml(entry.row.Name || "")}
-              <span class="result-group">${escapeHtml(entry.group)}</span>
-            </button>
-          `
-        )
-        .join("");
-
-      list.querySelectorAll(".result-item").forEach((btn, i) => {
-        btn.addEventListener("click", () => {
-          const entry = matches[i];
-          const layer = state.clusterGroups[entry.group];
-          if (layer.zoomToShowLayer) {
-            layer.zoomToShowLayer(entry.marker, () => entry.marker.openPopup());
-          } else {
-            state.map.setView(entry.marker.getLatLng(), 17);
-            entry.marker.openPopup();
-          }
+        items.forEach((item) => {
+          const matches = !q || item.dataset.name.includes(q);
+          item.classList.toggle("no-match", !matches);
+          if (matches) matchCount++;
         });
+
+        if (q && matchCount > 0) {
+          list.hidden = false;
+          expandBtn.classList.add("open");
+          expandBtn.setAttribute("aria-expanded", "true");
+        }
       });
     });
   }

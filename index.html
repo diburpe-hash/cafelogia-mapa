@@ -24,21 +24,29 @@
       </div>
 
       <div class="layers">
-        <label class="layer-row" data-group="Cafeterías de Especialidad">
-          <span class="layer-swatch swatch-cafe"></span>
-          <span class="layer-name">Cafeterías de Especialidad</span>
-          <span class="layer-count" id="countCafe">0</span>
-          <input type="checkbox" checked />
-        </label>
-        <label class="layer-row" data-group="Puntos Turísticos">
-          <span class="layer-swatch swatch-turismo"></span>
-          <span class="layer-name">Puntos Turísticos</span>
-          <span class="layer-count" id="countTurismo">0</span>
-          <input type="checkbox" checked />
-        </label>
+        <div class="layer-group" data-group="Cafeterías de Especialidad">
+          <div class="layer-row">
+            <button class="layer-expand" aria-label="Expandir cafeterías" aria-expanded="false">▸</button>
+            <span class="layer-swatch swatch-cafe"></span>
+            <span class="layer-name">Cafeterías de Especialidad</span>
+            <span class="layer-count" id="countCafe">0</span>
+            <button class="layer-sort" data-order="asc" title="Ordenar A-Z / Z-A">A↓</button>
+            <input type="checkbox" checked />
+          </div>
+          <ul class="place-list" hidden></ul>
+        </div>
+        <div class="layer-group" data-group="Puntos Turísticos">
+          <div class="layer-row">
+            <button class="layer-expand" aria-label="Expandir puntos turísticos" aria-expanded="false">▸</button>
+            <span class="layer-swatch swatch-turismo"></span>
+            <span class="layer-name">Puntos Turísticos</span>
+            <span class="layer-count" id="countTurismo">0</span>
+            <button class="layer-sort" data-order="asc" title="Ordenar A-Z / Z-A">A↓</button>
+            <input type="checkbox" checked />
+          </div>
+          <ul class="place-list" hidden></ul>
+        </div>
       </div>
-
-      <div id="resultsList" class="results-list" hidden></div>
 
       <div class="sidebar-footer">
         <a href="https://cafelogia.com" target="_blank" rel="noopener">← Volver al blog Cafelogía</a>
